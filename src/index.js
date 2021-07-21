@@ -3,6 +3,7 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const Filter = require("bad-words"); 
+const {generateMessage} = require("./utils/messages");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,9 +20,9 @@ io.on("connection", (socket) => {
     console.log("New Websocket connection");
 
     // emit to a particular connection 
-    socket.emit("message", "Welcome!");
+    socket.emit("message", generateMessage("Welcome!"));
     // emit to everyone but that particular connection
-    socket.broadcast.emit("message", "A new user has joined");
+    socket.broadcast.emit("message", generateMessage("A new user has joined"));
 
     // `callback argument is used to acknowledge events`
     socket.on("sendMessage", (message, callback) => {
@@ -32,7 +33,7 @@ io.on("connection", (socket) => {
         }
 
         // send it to everyone
-        io.emit("message", message);
+        io.emit("message", generateMessage(message));
 
         callback();
     });
@@ -44,7 +45,7 @@ io.on("connection", (socket) => {
 
     // emit message when a user leaves, built-in event
     socket.on("disconnect", () => {
-        io.emit("message", "A user has left");
+        io.emit("message", generateMessage("A user has left"));
     });
 
 });

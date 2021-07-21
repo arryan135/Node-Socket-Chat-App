@@ -15,7 +15,8 @@ socket.on("message", (message) => {
     // add message template inside at bottom on messages div
     // the second argument is the object that passes in the dynamic message to the message variable in the template
     const html = Mustache.render(messageTemplate, {
-        message
+        message: message.text,
+        createdAt: moment(message.createdAt).format("h:mm a")
     });
     $messages.insertAdjacentHTML("beforeend", html);
 });
