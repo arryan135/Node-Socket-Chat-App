@@ -11,6 +11,9 @@ const $messages = document.querySelector("#messages");
 const messageTemplate = document.querySelector("#message-template").innerHTML;
 const locationMessageTemplate = document.querySelector("#location-message-template").innerHTML;
 
+// Options 
+const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true});
+
 socket.on("message", (message) => {
     // add message template inside at bottom on messages div
     // the second argument is the object that passes in the dynamic message to the message variable in the template
@@ -67,4 +70,6 @@ $sendLocationButton.addEventListener("click", () => {
         });
     });
 });
+
+socket.emit("join", {username, room});
 

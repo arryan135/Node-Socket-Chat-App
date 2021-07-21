@@ -19,10 +19,15 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
     console.log("New Websocket connection");
 
-    // emit to a particular connection 
-    socket.emit("message", generateMessage("Welcome!"));
-    // emit to everyone but that particular connection
-    socket.broadcast.emit("message", generateMessage("A new user has joined"));
+    // listener for join
+    socket.on("join", ({username, room}) => {
+        socket.join(room);
+
+        // emit to a particular connection 
+        socket.emit("message", generateMessage("Welcome!"));
+        // emit to everyone but that particular connection
+        socket.broadcast.to(room).emit("message", generateMessage(`${username} has joined!`));
+    })
 
     // `callback argument is used to acknowledge events`
     socket.on("sendMessage", (message, callback) => {
@@ -33,7 +38,7 @@ io.on("connection", (socket) => {
         }
 
         // send it to everyone
-        io.emit("message", generateMessage(message));
+        io.to("Ann Arbor").emit("message", generateMessage(message));
 
         callback();
     });
