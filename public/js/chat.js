@@ -15,6 +15,31 @@ const sidebarTemplate = document.querySelector("#sidebar__template").innerHTML;
 // Options 
 const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true});
 
+const autoScroll = () => {
+    // new message element - lastest new message
+    const $newMessage = $messages.lastElementChild;
+
+    // Height of new message
+    const newMessageStyles = getComputedStyle($newMessage);
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom);
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
+
+    // Visible Height - messages we can see currently
+    const visibleHeight = $messages.offsetHeight; 
+
+    // Height of message container - includes even those messages that can't be seen (which need scrolling to look at)
+    const containerHeight = $messages.scrollHeight;
+
+    // How far have I scrolled ?
+    const scrollOffset = $messages.scrollTop + visibleHeight;
+
+    // to make sure that we were at the bottom before the last messages was added
+    if (containerHeight - newMessageHeight <= scrollOffset){
+        // this pushes us to the bottom
+        $messages.scrollTop = $messages.scrollHeight;
+    }
+}
+
 socket.on("message", (message) => {
     // add message template inside at bottom on messages div
     // the second argument is the object that passes in the dynamic message to the message variable in the template
@@ -24,6 +49,7 @@ socket.on("message", (message) => {
         createdAt: moment(message.createdAt).format("h:mm a")
     });
     $messages.insertAdjacentHTML("beforeend", html);
+    autoScroll();
 });
 
 socket.on("locationMessage", (message) => {
@@ -33,6 +59,7 @@ socket.on("locationMessage", (message) => {
         createdAt: moment(message.createdAt).format("h:mm a")
     });
     $messages.insertAdjacentHTML("beforeend", html);
+    autoScroll();
 });
 
 socket.on("roomData", ({ room, users }) => {
@@ -61,8 +88,6 @@ $messageForm.addEventListener("submit", (e) => {
         if (error){
             return console.log(error);
         }
-
-        console.log("Message delivered!");
     });
 });
 
