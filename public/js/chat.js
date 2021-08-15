@@ -84,7 +84,6 @@ $messageForm.addEventListener("submit", (e) => {
         // clear the input after the message has been sent
         $messageFormInput.value = "";
         $messageFormInput.focus();
-
         if (error){
             return console.log(error);
         }
